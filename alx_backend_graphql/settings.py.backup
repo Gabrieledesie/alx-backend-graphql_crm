@@ -17,6 +17,7 @@ INSTALLED_APPS = [
     'graphene_django',
     'django_filters',
     'crm',
+    'graphql_crm',
 ]
 
 MIDDLEWARE = [
@@ -83,3 +84,21 @@ GRAPHENE = {
     'SCHEMA': 'graphql_crm.schema.schema'
 }
 
+
+# GraphQL Configuration
+INSTALLED_APPS += [
+    'graphene_django',
+    'django_filters',
+    'crm',
+    'graphql_crm',
+    'graphql_crm',
+]
+
+GRAPHENE = {
+    'SCHEMA': 'graphql_crm.schema.schema'
+}
+
+# GraphQL Configuration
+GRAPHENE = {
+    'SCHEMA': 'graphql_crm.schema.schema'
+}
