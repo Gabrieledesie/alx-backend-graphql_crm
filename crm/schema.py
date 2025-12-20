@@ -127,8 +127,6 @@ class Query(ObjectType):
     def resolve_hello(root, info):
         return "Hello, GraphQL!"
 
-    def resolve_all_customers(root, info):
-        return Customer.objects.all()
 
     def resolve_all_products(root, info):
         return Product.objects.all()
