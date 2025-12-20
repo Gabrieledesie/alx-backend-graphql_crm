@@ -1,9 +1,18 @@
 import graphene
 from graphene import ObjectType
 from graphene_django import DjangoObjectType
+import graphene.relay as relay
+from .filters import CustomerFilter
+from graphene_django.filter import DjangoFilterConnectionField
 
 from .models import Customer, Product, Order
 
+
+class CustomerNode(DjangoObjectType):
+    class Meta:
+        model = Customer
+        interfaces = (relay.Node,)
+        filterset_class = CustomerFilter
 
 class CustomerType(DjangoObjectType):
     class Meta:
@@ -79,7 +88,7 @@ class Query(ObjectType):
     hello = graphene.String()
 
     # existing simple lists
-    all_customers = graphene.List(CustomerType)
+    all_customers = DjangoFilterConnectionField(CustomerNode)
     all_products = graphene.List(ProductType)
     all_orders = graphene.List(OrderType)
 
