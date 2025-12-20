@@ -44,6 +44,28 @@ class CreateProduct(graphene.Mutation):
         product.save()
         return CreateProduct(product=product)
 
+class CreateOrder(graphene.Mutation):
+    order = graphene.Field(OrderType)
+
+    class Arguments:
+        customer_id = graphene.ID(required=True)
+        product_id = graphene.ID(required=True)
+        quantity = graphene.Int(required=True)
+
+    def mutate(self, info, customer_id, product_id, quantity):
+        customer = Customer.objects.get(id=customer_id)
+        product = Product.objects.get(id=product_id)
+        total_price = product.price * quantity
+        
+        order = Order(
+            customer=customer,
+            product=product,
+            quantity=quantity,
+            total_price=total_price
+        )
+        order.save()
+        return CreateOrder(order=order)
+
 class Query(ObjectType):
     hello = graphene.String()
     all_customers = graphene.List(CustomerType)
@@ -65,4 +87,6 @@ class Query(ObjectType):
 class Mutation(ObjectType):
     create_customer = CreateCustomer.Field()
     create_product = CreateProduct.Field()
+    create_order = CreateOrder.Field()
+
 
