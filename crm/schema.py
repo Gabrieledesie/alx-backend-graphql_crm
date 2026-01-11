@@ -2,6 +2,7 @@ import graphene
 from graphene_django import DjangoObjectType
 from django.db import transaction
 from crm.models import Customer, Product, Order
+from crm.models import Product
 import re
 
 
