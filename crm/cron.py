@@ -4,13 +4,14 @@ Heartbeat logger to monitor application health
 """
 
 from datetime import datetime
-import requests
+from gql import gql, Client
+from gql.transport.requests import RequestsHTTPTransport
 
 
 def log_crm_heartbeat():
     """
     Logs a heartbeat message every 5 minutes to confirm CRM health.
-    Optionally queries GraphQL hello field to verify endpoint responsiveness.
+    Queries GraphQL hello field to verify endpoint responsiveness.
     """
     # Get current timestamp in DD/MM/YYYY-HH:MM:SS format
     timestamp = datetime.now().strftime('%d/%m/%Y-%H:%M:%S')
@@ -18,23 +19,26 @@ def log_crm_heartbeat():
     # Base log message
     log_message = f"{timestamp} CRM is alive"
     
-    # Optional: Query GraphQL hello field to verify endpoint
+    # Query GraphQL hello field to verify endpoint
     try:
-        graphql_query = {
-            'query': '{ hello }'
-        }
-        response = requests.post(
-            'http://localhost:8000/graphql',
-            json=graphql_query,
-            timeout=5
-        )
+        # Setup GraphQL client
+        transport = RequestsHTTPTransport(url='http://localhost:8000/graphql')
+        client = Client(transport=transport, fetch_schema_from_transport=False)
         
-        if response.status_code == 200:
-            data = response.json()
-            if data.get('data', {}).get('hello'):
-                log_message += " - GraphQL endpoint responsive"
+        # Query hello field
+        query = gql('''
+            query {
+                hello
+            }
+        ''')
+        
+        result = client.execute(query)
+        
+        if result.get('hello'):
+            log_message += " - GraphQL endpoint responsive"
         else:
             log_message += " - GraphQL endpoint not responding"
+            
     except Exception as e:
         log_message += f" - GraphQL check failed: {str(e)}"
     
